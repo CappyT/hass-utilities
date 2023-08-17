@@ -8,7 +8,7 @@ server {
         deny    all;
 
         proxy_pass http://backend;
-        proxy_set_header X-Ingress-Path {{ .entry }};
+        #proxy_set_header X-Ingress-Path {{ .entry }};
         include /etc/nginx/includes/proxy_params.conf;
     }
 }
