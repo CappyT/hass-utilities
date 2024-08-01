@@ -1,0 +1,19 @@
+name: "Cloudflare DDNS"
+version: "1.13.0"
+slug: cloudflare-ddns
+description: >-
+  "An addon based on https://github.com/favonia/cloudflare-ddns to update your public IP on a cloudflare DNS record"
+arch:
+  - amd64
+  - aarch64
+  - armv7
+  - armhf
+url: "https://github.com/favonia/cloudflare-ddns"
+image: favonia/cloudflare-ddns
+startup: application
+boot: auto
+environment:
+  CF_ACCOUNT_ID: ""
+  CF_API_TOKEN: "yourapitokenhere"
+  DOMAINS: "example.com,my.example.net"
+  IP6_PROVIDER: none
