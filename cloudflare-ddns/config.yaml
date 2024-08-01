@@ -12,8 +12,17 @@ url: "https://github.com/favonia/cloudflare-ddns"
 image: favonia/cloudflare-ddns
 startup: application
 boot: auto
+options:
+  cloudflare_account_id: ""
+  cloudflare_api_token: "yourapitokenhere"
+  domains: "example.com,my.example.net"
+  delete_on_stop: false
+  timezone: "Europe/Rome"
+  update_interval: "@every 5m"
+  update_on_start: true
+  proxied: false
+  record_comment: "Managed by HA Cloudflare DDNS"
+  shoutrrr: ""
 environment:
-  CF_ACCOUNT_ID: ""
-  CF_API_TOKEN: "yourapitokenhere"
-  DOMAINS: "example.com,my.example.net"
   IP6_PROVIDER: none
+  EMOJI: false
