@@ -7,7 +7,7 @@ server {
         allow   172.30.32.2;
         deny    all;
 
-        proxy_pass {{ .server }};
+        proxy_pass http://{{ .server }};
         include /etc/nginx/includes/proxy_params.conf;
     }
 }
