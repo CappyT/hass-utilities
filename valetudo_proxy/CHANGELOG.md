@@ -1,3 +1,7 @@
+### 1.5
+
+- Change init process
+
 ### 1.4
 
 - Config cleanup
