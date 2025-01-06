@@ -1,3 +1,7 @@
+### 1.3
+
+- Update to debian base v7.6.3 
+
 ### 1.2
 
 - Attempt another fix
