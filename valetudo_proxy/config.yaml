@@ -1,5 +1,5 @@
 name: Valetudo Proxy
-version: "1.7"
+version: "1.8"
 panel_icon: "mdi:robot-vacuum"
 panel_title: Valetudo
 slug: valetudo-proxy

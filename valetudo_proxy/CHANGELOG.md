@@ -1,3 +1,7 @@
+### 1.8
+
+- Typo fix
+
 ### 1.7
 
 - Fix s6 overlay scripts permissions
