@@ -14,7 +14,9 @@ RUN apt-get -qq update \
 # Copy root filesystem
 COPY rootfs /
 
-RUN chmod a+x /etc/cont-init.d/nginx.sh
+RUN chmod a+x /etc/cont-init.d/nginx.sh && \
+    chmod a+x /etc/services.d/run && \
+    chmod a+x /etc/services.d/finish
 
 # Build arguments
 ARG BUILD_ARCH

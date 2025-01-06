@@ -1,3 +1,7 @@
+### 1.7
+
+- Fix s6 overlay scripts permissions
+
 ### 1.6
 
 - Fix execution error
