@@ -1,3 +1,7 @@
+### 1.6
+
+- Fix execution error
+
 ### 1.5
 
 - Change init process

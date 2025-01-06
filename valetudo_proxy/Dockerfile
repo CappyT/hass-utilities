@@ -14,6 +14,8 @@ RUN apt-get -qq update \
 # Copy root filesystem
 COPY rootfs /
 
+RUN chmod a+x /etc/cont-init.d/nginx.sh
+
 # Build arguments
 ARG BUILD_ARCH
 ARG BUILD_DATE
