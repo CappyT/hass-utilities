@@ -1,3 +1,7 @@
+### 1.9
+
+- Fix Nginx configuration
+
 ### 1.8
 
 - Typo fix
