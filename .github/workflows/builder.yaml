@@ -1,0 +1,85 @@
+name: Builder
+
+env:
+  MONITORED_FILES: "config.yaml Dockerfile rootfs"
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  init:
+    name: Initialize builds
+    runs-on: ubuntu-latest
+    outputs:
+      changed: ${{ steps.filter.outputs.changed }}
+      changed_apps: ${{ steps.filter.outputs.changed_apps }}
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Find add-on directories
+        id: apps
+        uses: home-assistant/actions/helpers/find-addons@master
+
+      - name: Filter changed add-ons
+        id: filter
+        env:
+          APPS: ${{ steps.apps.outputs.addons }}
+          BASE: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
+        run: |
+          # A new branch has no previous commit to compare with, so everything counts as changed.
+          if [[ "${BASE}" =~ ^0+$ ]] || ! git cat-file -e "${BASE}^{commit}" 2>/dev/null; then
+            changed_files=$(git ls-files)
+          else
+            changed_files=$(git diff --name-only "${BASE}" HEAD)
+          fi
+
+          changed_apps=()
+          for app in ${APPS}; do
+            # Add-ons without a Dockerfile run an upstream image and have nothing to build.
+            [[ -f "${app}/Dockerfile" ]] || continue
+            if grep -qE '^\.github/workflows/(builder|build-app)\.yaml$' <<< "${changed_files}"; then
+              changed_apps+=("${app}")
+              continue
+            fi
+            for file in ${MONITORED_FILES}; do
+              if grep -q "^${app}/${file}" <<< "${changed_files}"; then
+                changed_apps+=("${app}")
+                break
+              fi
+            done
+          done
+
+          if [[ ${#changed_apps[@]} -gt 0 ]]; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            echo "changed_apps=$(jq -nc '$ARGS.positional' --args "${changed_apps[@]}")" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          fi
+
+  build-app:
+    name: Build ${{ matrix.app }}
+    needs: init
+    if: needs.init.outputs.changed == 'true'
+    permissions:
+      contents: write
+      id-token: write
+      packages: write
+    strategy:
+      fail-fast: false
+      matrix:
+        app: ${{ fromJSON(needs.init.outputs.changed_apps) }}
+    uses: ./.github/workflows/build-app.yaml
+    with:
+      app: ${{ matrix.app }}
+      publish: ${{ github.event_name == 'push' }}
