@@ -10,8 +10,6 @@ arch:
   - armhf
 url: "https://github.com/favonia/cloudflare-ddns"
 image: favonia/cloudflare-ddns
-startup: application
-boot: auto
 options:
   cloudflare_account_id: ""
   cloudflare_api_token: "yourapitokenhere"
