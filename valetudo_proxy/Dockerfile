@@ -1,47 +1,27 @@
-ARG BUILD_ARCH
+ARG BUILD_FROM=ghcr.io/hassio-addons/debian-base:9.5.1
 # hadolint ignore=DL3006
-FROM ghcr.io/hassio-addons/debian-base/${BUILD_ARCH}:7.6.3
+FROM ${BUILD_FROM}
 
 # Set shell
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 # Setup base
-# hadolint ignore=DL3003
+# hadolint ignore=DL3008
 RUN apt-get -qq update \
     && apt-get -qq install --no-install-recommends -y nginx \
-    && (apt-get autoremove -y; apt-get autoclean -y)
+    && rm -rf /var/lib/apt/lists/*
 
 # Copy root filesystem
 COPY rootfs /
 
-RUN chmod a+x /etc/cont-init.d/nginx.sh && \
-    chmod a+x /etc/services.d/nginx/run && \
-    chmod a+x /etc/services.d/nginx/finish
+# Nginx answers 403 to every client but the ingress gateway, so any HTTP reply means healthy.
+HEALTHCHECK --interval=30s --timeout=5s --start-period=30s \
+    CMD curl -s -o /dev/null http://127.0.0.1:5000/ || exit 1
 
-# Build arguments
-ARG BUILD_ARCH
-ARG BUILD_DATE
-ARG BUILD_DESCRIPTION
-ARG BUILD_NAME
-ARG BUILD_REF
-ARG BUILD_REPOSITORY
-ARG BUILD_VERSION
-
-# Labels
 LABEL \
-    io.hass.name="${BUILD_NAME}" \
-    io.hass.description="${BUILD_DESCRIPTION}" \
-    io.hass.arch="${BUILD_ARCH}" \
-    io.hass.type="addon" \
-    io.hass.version=${BUILD_VERSION} \
     maintainer="CappyT <cappyt@eden.network>" \
-    org.opencontainers.image.title="${BUILD_NAME}" \
-    org.opencontainers.image.description="${BUILD_DESCRIPTION}" \
-    org.opencontainers.image.vendor="Valetudo Proxy Add-on" \
+    org.opencontainers.image.title="Valetudo Proxy" \
+    org.opencontainers.image.description="Proxy addon for Valetudo" \
     org.opencontainers.image.authors="CappyT <cappyt@eden.network>" \
     org.opencontainers.image.licenses="MIT" \
-    org.opencontainers.image.source="https://github.com/${BUILD_REPOSITORY}" \
-    org.opencontainers.image.documentation="https://github.com/${BUILD_REPOSITORY}/blob/main/valetudo_proxy/README.md" \
-    org.opencontainers.image.created=${BUILD_DATE} \
-    org.opencontainers.image.revision=${BUILD_REF} \
-    org.opencontainers.image.version=${BUILD_VERSION}
+    org.opencontainers.image.documentation="https://github.com/CappyT/hass-utilities/blob/main/valetudo_proxy/README.md"
